@@ -2,14 +2,14 @@ import useInput from '@hooks/useinputs';
 import React, { useCallback, useState } from 'react';
 import * as S from './style';
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { url } from 'inspector';
+import { Link } from 'react-router-dom';
 
 const SignUp = () => {
   const [email, onChangeEmail] = useInput('');
   const [nickname, onChangeNickname] = useInput('');
   const [password, setPassword] = useState('');
   const [passwordCheck, setPasswordCheck] = useState('');
-  const [signUpError, setSignUpError] = useState(false);
+  const [signUpError, setSignUpError] = useState('');
   const [signUpSuccess, setSignUpSuccess] = useState(false);
   const [mismatchError, setMismatchError] = useState(false);
 
@@ -34,13 +34,14 @@ const SignUp = () => {
       e.preventDefault();
       if (!mismatchError && nickname) {
         console.log(email, nickname, password, passwordCheck);
+        setSignUpSuccess(false);
         axios
           .post('http://localhost:3095/api/users', { email, nickname, password })
           .then((res: AxiosResponse) => {
-            console.log(res);
+            setSignUpSuccess(true);
           })
           .catch((error: AxiosError) => {
-            console.log(error.response);
+            setSignUpError(error.response?.data);
           })
           .finally(() => {});
       }
@@ -92,7 +93,7 @@ const SignUp = () => {
       </S.Form>
       <S.LinkContainer>
         이미 회원이신가요?&nbsp;
-        <a href="/login">로그인 하러가기</a>
+        <Link to="/login">로그인 하러가기</Link>
       </S.LinkContainer>
     </div>
   );
