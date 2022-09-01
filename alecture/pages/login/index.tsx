@@ -1,5 +1,5 @@
 import useInput from '@hooks/useinputs';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import React, { useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
@@ -25,8 +25,8 @@ const LogIn = () => {
             withCredentials: true,
           },
         )
-        .then(() => {
-          mutate();
+        .then((res: AxiosResponse) => {
+          mutate(res.data, false);
         })
         .catch((error) => {
           setLogInError(error.response?.data?.code === 401);
