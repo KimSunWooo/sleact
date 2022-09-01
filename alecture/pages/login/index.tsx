@@ -2,12 +2,13 @@ import useInput from '@hooks/useinputs';
 import axios from 'axios';
 import React, { useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Redirect } from 'react-router';
 import * as S from './style';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 
 const LogIn = () => {
-  const { data, error } = useSWR('http://localhost:3095/api/users', fetcher);
+  const { data, error, mutate } = useSWR('http://localhost:3095/api/users', fetcher, { dedupingInterval: 100000 });
   const [logInError, setLogInError] = useState(false);
   const [email, onChangeEmail] = useInput('');
   const [password, onChangePassword] = useInput('');
@@ -24,13 +25,19 @@ const LogIn = () => {
             withCredentials: true,
           },
         )
-        .then(() => {})
+        .then(() => {
+          mutate();
+        })
         .catch((error) => {
           setLogInError(error.response?.data?.code === 401);
         });
     },
     [email, password],
   );
+
+  if (data) {
+    return <Redirect to="/workspace/channel" />;
+  }
   return (
     <div id="container">
       <S.Header>Sleact</S.Header>
