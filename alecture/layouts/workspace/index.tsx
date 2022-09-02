@@ -13,6 +13,8 @@ import useInput from '@hooks/useinputs';
 import Modal from '@components/modal';
 import { toast } from 'react-toastify';
 import CreateChannelModal from '@components/createChannelModal';
+import InviteWorkspaceModal from '@components/inviteWorkspaceModal';
+import InviteChannelModal from '@components/inviteChannelModal';
 
 const DirectMessage = loadable(() => import('@pages/dm'));
 const Channel = loadable(() => import('@pages/channel'));
@@ -24,6 +26,8 @@ const WorkSpace: FC = ({ children }) => {
   const [showCreateWorkspaceModal, setShowCreateWorkspaceModal] = useState(false);
   const [showCreateChannelModal, setCreateChannelModal] = useState(false);
   const [showWorkSpaceModal, setShowWorkSpaceModal] = useState(false);
+  const [showInviteWorkSpaceModal, setShowInviteWorkSpaceModal] = useState(false);
+  const [showInviteChannelModal, setShowInviteChannelModal] = useState(false);
 
   const [newWorkspace, onChangeNewWorkspace, setNewWorkspace] = useInput('');
   const [newUrl, onChangeNewUrl, setNewUrl] = useInput('');
@@ -91,6 +95,8 @@ const WorkSpace: FC = ({ children }) => {
   const onClickShowCreateChannelModal = useCallback(() => {
     setCreateChannelModal(true);
   }, []);
+
+  const onClickInviteWorkSpace = useCallback(() => {}, []);
 
   if (!userData) {
     return <Redirect to="/login" />;
@@ -167,6 +173,16 @@ const WorkSpace: FC = ({ children }) => {
         show={showCreateChannelModal}
         onCloseModal={onCloseModal}
         setShowCreateChannelModal={setShowCreateWorkspaceModal}
+      />
+      <InviteWorkspaceModal
+        show={showInviteWorkSpaceModal}
+        onCloseModal={onCloseModal}
+        setShowInviteWorkspaceModal={setShowInviteWorkSpaceModal}
+      />
+      <InviteChannelModal
+        show={showInviteWorkSpaceModal}
+        onCloseModal={onCloseModal}
+        setShowInviteWorkspaceModal={setShowInviteWorkSpaceModal}
       />
     </div>
   );
