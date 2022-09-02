@@ -17,9 +17,9 @@ interface Props {
 const InviteWorkspaceModal: FC<Props> = ({ show, onCloseModal, setShowInviteWorkspaceModal }) => {
   const { workspace } = useParams<{ workspace: string; channel: string }>();
   const [newMember, onChangeNewMember, setNewMember] = useInput('');
-  const { data: userData } = useSWR<IUser>('/api/users', fetcher);
+  const { data: userData } = useSWR<IUser>('http://localhost:3095/api/users', fetcher);
   const { mutate: revalidateMember } = useSWR<IUser[]>(
-    userData ? `/api/workspaces/${workspace}/members` : null,
+    userData ? `http://localhost:3095/api/workspaces/${workspace}/members` : null,
     fetcher,
   );
 
