@@ -8,14 +8,17 @@ import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 
 const LogIn = () => {
-  const { data, error, mutate } = useSWR('http://localhost:3095/api/users', fetcher, { dedupingInterval: 100000 });
+  const {
+    data: userData,
+    error,
+    mutate,
+  } = useSWR('http://localhost:3095/api/users', fetcher, { dedupingInterval: 2000 });
   const [logInError, setLogInError] = useState(false);
   const [email, onChangeEmail] = useInput('');
   const [password, onChangePassword] = useInput('');
   const onClickSubmit = useCallback(
     (e) => {
       e.preventDefault();
-      console.log(email, password);
       setLogInError(false);
       axios
         .post(
@@ -29,14 +32,14 @@ const LogIn = () => {
           mutate(res.data, false);
         })
         .catch((error) => {
-          setLogInError(error.response?.data?.code === 401);
+          setLogInError(error.response?.userData?.code === 401);
         });
     },
     [email, password],
   );
 
-  if (data) {
-    return <Redirect to="/workspace/channel" />;
+  if (userData) {
+    return <Redirect to="/workspace/sleact/channel/일반" />;
   }
   return (
     <div id="container">
