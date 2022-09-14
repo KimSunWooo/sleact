@@ -15,8 +15,10 @@ import { toast } from 'react-toastify';
 import CreateChannelModal from '@components/createChannelModal';
 import InviteWorkspaceModal from '@components/inviteWorkspaceModal';
 import InviteChannelModal from '@components/inviteChannelModal';
+import ChannelList from '@components/ChannelList';
+import DMList from '@components/DMList';
 
-const DirectMessage = loadable(() => import('@pages/dm'));
+const DM = loadable(() => import('@pages/dm'));
 const Channel = loadable(() => import('@pages/channel'));
 
 const WorkSpace: FC = ({ children }) => {
@@ -32,19 +34,13 @@ const WorkSpace: FC = ({ children }) => {
   const [newWorkspace, onChangeNewWorkspace, setNewWorkspace] = useInput('');
   const [newUrl, onChangeNewUrl, setNewUrl] = useInput('');
 
-  const {
-    data: userData,
-    error,
-    mutate,
-    isValidating,
-  } = useSWR<IUser | false>('http://localhost:3095/api/users', fetcher);
-  const { data: channelData } = useSWR<IChannel[]>(
-    userData ? `http://localhost:3095/api/workspaces/${workspace}/channels` : null,
-    fetcher,
-  );
+  const { data: userData, error, mutate, isValidating } = useSWR<IUser | false>('/api/users', fetcher);
+
+  const { data: channelData } = useSWR<IChannel[]>(userData ? `/api/workspaces/${workspace}/channels` : null, fetcher);
+  const { data: memeberData } = useSWR<IChannel[]>(userData ? `/api/workspaces/${workspace}/memebers` : null, fetcher);
 
   const logOut = useCallback(() => {
-    axios.post('http://localhost:3095/api/users/logout', null, { withCredentials: true }).then(() => {});
+    axios.post('/api/users/logout', null, { withCredentials: true }).then(() => {});
     mutate(false);
   }, []);
 
@@ -65,7 +61,7 @@ const WorkSpace: FC = ({ children }) => {
       if (!newUrl || !newUrl.trim()) return;
       axios
         .post(
-          'http://localhost:3095/api/workspaces',
+          '/api/workspaces',
           {
             workspace: newWorkspace,
             url: newUrl,
@@ -86,6 +82,7 @@ const WorkSpace: FC = ({ children }) => {
     setShowCreateWorkspaceModal(false);
     setShowWorkSpaceModal(false);
     setCreateChannelModal(false);
+    setShowInviteWorkSpaceModal(false);
   }, []);
 
   const onClickWorkspaceModal = useCallback(() => {
@@ -96,7 +93,9 @@ const WorkSpace: FC = ({ children }) => {
     setCreateChannelModal(true);
   }, []);
 
-  const onClickInviteWorkSpace = useCallback(() => {}, []);
+  const onClickInviteWorkSpace = useCallback(() => {
+    setShowInviteWorkSpaceModal(true);
+  }, []);
 
   if (!userData) {
     return <Redirect to="/login" />;
@@ -136,23 +135,25 @@ const WorkSpace: FC = ({ children }) => {
           <S.AddButton onClick={onClickCreateWorkSpace}>+</S.AddButton>
         </S.Workspaces>
         <S.Channels>
-          <S.WorkspaceName onClick={onClickWorkspaceModal}>WorkSpacesName</S.WorkspaceName>
+          <S.WorkspaceName onClick={onClickWorkspaceModal}>
+            {userData?.Workspaces?.find((v: any) => v.url === workspace)?.name}
+          </S.WorkspaceName>
           <S.MenuScroll>
             <Menu show={showWorkSpaceModal} onCloseModal={onCloseModal} style={{ top: 95, left: 80 }}>
               <S.WorkspaceModal>
                 <button onClick={onClickShowCreateChannelModal}>채널 만들기</button>
                 <button onClick={logOut}>로그아웃</button>
+                <button onClick={onClickInviteWorkSpace}>워크스페이스로 사용자 초대</button>
               </S.WorkspaceModal>
             </Menu>
-            {channelData?.map((el) => (
-              <div>{el.name}</div>
-            ))}
+            <ChannelList />
+            <DMList />
           </S.MenuScroll>
         </S.Channels>
         <S.Chats>
           <Switch>
             <Route path="/workspace/:workspace/channel/:channel" component={Channel} />
-            <Route path="/workspace/:workspace/dm/:id" component={DirectMessage} />
+            <Route path="/workspace/:workspace/dm/:id" component={DM} />
           </Switch>
         </S.Chats>
       </S.WorkspaceWrapper>

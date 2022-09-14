@@ -41,7 +41,7 @@ const SignUp = () => {
         console.log(email, nickname, password, passwordCheck);
         setSignUpSuccess(false);
         axios
-          .post('http://localhost:3095/api/users', { email, nickname, password })
+          .post('/api/users', { email, nickname, password })
           .then((res: AxiosResponse) => {
             setSignUpSuccess(true);
           })

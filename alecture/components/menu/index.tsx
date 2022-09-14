@@ -1,5 +1,4 @@
 import React, { CSSProperties, FC, useCallback } from 'react';
-import { idText } from 'typescript';
 import * as S from './style';
 
 interface MenuProps {
