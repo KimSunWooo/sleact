@@ -40,8 +40,9 @@ const WorkSpace: FC = ({ children }) => {
   const { data: memeberData } = useSWR<IChannel[]>(userData ? `/api/workspaces/${workspace}/memebers` : null, fetcher);
 
   const logOut = useCallback(() => {
-    axios.post('/api/users/logout', null, { withCredentials: true }).then(() => {});
-    mutate(false);
+    axios.post('/api/users/logout', null, { withCredentials: true }).then(() => {
+      mutate(false);
+    });
   }, []);
 
   const onClickUserProfile = useCallback((e) => {
